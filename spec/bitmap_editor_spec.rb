@@ -36,5 +36,21 @@ RSpec.describe BitmapEditor do
           .to output("There is no image :(").to_stdout
       end
     end
+
+    context "Raise errors" do
+      it "returns FileNotExists" do
+        expect { subject.run('/some/wrong_way') }.to raise_error(/please provide correct path/)
+      end
+
+      it "returns StepNotExists" do
+        expect { subject.run('spec/fixtures/files/step_not_exists.txt') }
+          .to raise_error(/unprocessable step:/)
+      end
+
+      it "returns BoardNotExists" do
+        expect { subject.run('spec/fixtures/files/board_not_exists.txt') }
+          .to raise_error(/board should be created/)
+      end
+    end
   end
 end
