@@ -46,6 +46,7 @@ class BitmapEditor
 
   def create_board(*args)
     @length, @height = prepare_arguments(*args, size: 2)
+    validator.validate_board(length: @length, height: @height)
 
     @board = Array.new(@height) { Array.new(@length, :O) }
   end

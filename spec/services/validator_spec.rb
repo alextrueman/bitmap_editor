@@ -49,4 +49,17 @@ RSpec.describe Services::Validator do
       expect { action_with_bad_params }.to raise_error(/wrong coordinates/)
     end
   end
+
+  describe "#validate_board" do
+    let(:action_with_good_params) { subject.validate_board(length: 3, height: 3) }
+    let(:action_with_bad_params)  { subject.validate_board(length: 256, height: 2) }
+
+    it "shouldn't raise error" do
+      expect { action_with_good_params }.not_to raise_error
+    end
+
+    it "should raise error" do
+      expect { action_with_bad_params }.to raise_error(/wrong coordinates/)
+    end
+  end
 end
