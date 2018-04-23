@@ -6,18 +6,21 @@ class BitmapEditor
   POSSIBLE_FIRST_STEPS = %w[I S].freeze
 
   def run(path)
-    file(path).each_with_index do |line, index|
-      line = line.split
+    file = load_file(path)
+    check_first_step(file.first[0])
 
-      if index.zero? && !POSSIBLE_FIRST_STEPS.include?(line.first)
-        raise BoardNotExists, 'board should be created'
-      else
-        select_action(line)
-      end
+    file.each do |line|
+      select_action(line.split)
     end
   end
 
   private
+
+  def check_first_step(step)
+    return if POSSIBLE_FIRST_STEPS.include?(step)
+
+    raise BoardNotExists, 'board should be created'
+  end
 
   def select_action(line)
     step = line.shift
@@ -33,41 +36,45 @@ class BitmapEditor
     end
   end
 
-  def file(path)
+  def load_file(path)
     raise FileNotExists, 'please provide correct path' unless File.exists?(path.to_s)
 
-    File.open(path)
+    @_lines ||= File.open(path).read.split(/\R/)
   end
 
-  def create_board(y, x)
-    x, y = x.to_i, y.to_i
+  def create_board(*args)
+    y, x = map_to_i(*args)
 
-    @board = Array.new(x) { Array.new(y, 'O') }
+    @board = Array.new(x) { Array.new(y, :O) }
   end
 
-  def colour_pixel(x, y, color)
-    x, y = x.to_i, y.to_i
+  def colour_pixel(*args, color)
+    x, y = map_to_i(*args)
 
-    @board[y-1][x-1] = color
+    @board[y-1][x-1] = color.to_sym
   end
 
-  def colour_vertical(x, y1, y2, color)
-    x, y1, y2 = x.to_i, y1.to_i, y2.to_i
+  def colour_vertical(*args, color)
+    x, y1, y2 = map_to_i(*args)
 
     (y1..y2).each do |y|
-      @board[y-1][x-1] = color
+      @board[y-1][x-1] = color.to_sym
     end
   end
 
-  def colour_horizontal(x1, x2, y, color)
-    x1, x2, y = x1.to_i, x2.to_i, y.to_i
+  def colour_horizontal(*args, color)
+    x1, x2, y = map_to_i(*args)
 
     (x1..x2).each do |x|
-      @board[y-1][x-1] = color
+      @board[y-1][x-1] = color.to_sym
     end
+  end
+
+  def map_to_i(*args)
+    args.map(&:to_i)
   end
 
   def show_board
-    print @board ? @board.map { |line| line.join }.join("\n") : "There is no image :("
+    print @board ? @board.map(&:join).join("\n") : "There is no image :("
   end
 end
