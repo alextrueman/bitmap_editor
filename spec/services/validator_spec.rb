@@ -1,4 +1,5 @@
 require "./lib/bitmap_editor"
+require "./services/validator"
 
 RSpec.describe Services::Validator do
   describe "#validate_line" do

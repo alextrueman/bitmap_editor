@@ -30,6 +30,13 @@ RSpec.describe BitmapEditor do
       end
     end
 
+    context "Clear bitmap" do
+      it "returns clear bitmap" do
+        expect { subject.run('spec/fixtures/files/clear_bitmap.txt') }
+          .to output("OOOOO\nOOOOO\nOOOOO\nOOOOO\nOOOOO\nOOOOO").to_stdout
+      end
+    end
+
     context "Empty bitmap" do
       it "return message 'There is no image :('" do
         expect { subject.run('spec/fixtures/files/empty_bitmap.txt') }
@@ -44,7 +51,7 @@ RSpec.describe BitmapEditor do
 
       it "returns StepNotExists" do
         expect { subject.run('spec/fixtures/files/step_not_exists.txt') }
-          .to raise_error(/unprocessable step:/)
+          .to raise_error(/unprocessable step/)
       end
 
       it "returns BoardNotExists" do
