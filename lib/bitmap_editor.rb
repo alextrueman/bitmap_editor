@@ -1,9 +1,10 @@
+require './services/validator'
+
 class BitmapEditor
   class StepNotExists < StandardError; end
   class BoardNotExists < StandardError; end
   class FileNotExists < StandardError; end
   class ArgumentsNotValid < StandardError; end
-  class CoordinatesNotValid < StandardError; end
 
   POSSIBLE_FIRST_STEPS = %w[I S].freeze
 
@@ -51,13 +52,14 @@ class BitmapEditor
 
   def colour_pixel(*args, color)
     x, y = prepare_arguments(*args, size: 2)
-    validate_one_pixel([x, y])
+    validator.validate_one_pixel([x, y], height: @height, length: @length)
+
     @board[y-1][x-1] = color.to_sym
   end
 
   def colour_vertical(*args, color)
     x, y1, y2 = prepare_arguments(*args, size: 3)
-    validate_line(line: [y1, y2], position: x, line_target: @height, position_target: @length)
+    validator.validate_line(line: [y1, y2], position: x, line_target: @height, position_target: @length)
 
     (y1..y2).each do |y|
       @board[y-1][x-1] = color.to_sym
@@ -66,7 +68,7 @@ class BitmapEditor
 
   def colour_horizontal(*args, color)
     x1, x2, y = prepare_arguments(*args, size: 3)
-    validate_line(line: [x1, x2], position: y, line_target: @length, position_target: @height)
+    validator.validate_line(line: [x1, x2], position: y, line_target: @length, position_target: @height)
 
     (x1..x2).each do |x|
       @board[y-1][x-1] = color.to_sym
@@ -87,19 +89,7 @@ class BitmapEditor
     print @board ? @board.map(&:join).join("\n") : "There is no image :("
   end
 
-  def validate_line(line:, position:, line_target:, position_target:)
-    return unless more_than?(line, line_target) || position > position_target || line.inject(:>)
-
-    raise CoordinatesNotValid, 'wrong coordinates'
-  end
-
-  def validate_one_pixel(coordinates)
-    return unless coordinates.first > @height || coordinates.last > @length
-
-    raise CoordinatesNotValid, 'wrong coordinates'
-  end
-
-  def more_than?(args, target)
-    args.any? { |el| el > target }
+  def validator
+    Services::Validator.new
   end
 end
