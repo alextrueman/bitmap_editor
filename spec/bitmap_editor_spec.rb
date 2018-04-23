@@ -51,6 +51,17 @@ RSpec.describe BitmapEditor do
         expect { subject.run('spec/fixtures/files/board_not_exists.txt') }
           .to raise_error(/board should be created/)
       end
+
+      it "returns CoordinatesNotValid" do
+        expect { subject.run('spec/fixtures/files/wrong_horizontal_coordinates.txt') }
+          .to raise_error(/wrong coordinates/)
+
+        expect { subject.run('spec/fixtures/files/wrong_vertical_coordinates.txt') }
+          .to raise_error(/wrong coordinates/)
+
+        expect { subject.run('spec/fixtures/files/wrong_one_field_coordinates.txt') }
+          .to raise_error(/wrong coordinates/)
+      end
     end
   end
 end
